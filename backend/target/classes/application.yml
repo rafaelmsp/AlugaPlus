@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/alugaplus
+    username: postgres
+    password: 1q2w3e4r
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 30MB
+      max-request-size: 30MB
+  mail:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+  cache:
+    type: simple
+
+server:
+  port: 8080
+
+jwt:
+  secret: 7f97f2253d5d4e1b8a4f2e1d9576c310be19ad6d1f5e3e11c5b0a29c7f8c2d4a
+  expiration: 86400000
+
+alugaplus:
+  storage:
+    base-path: uploads
+    contratos: uploads/contracts
+    vistorias: uploads/vistorias
+    comprovantes: uploads/comprovantes
+    manutencoes: uploads/manutencoes
+  cors:
+    allowed-origins: http://localhost:4200,http://localhost:*,http://127.0.0.1:*
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
+

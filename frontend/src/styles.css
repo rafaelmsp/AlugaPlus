@@ -1,0 +1,42 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-900 text-white;
+}
+
+.card {
+  @apply bg-surface/80 backdrop-blur rounded-xl p-5 border border-primary/20 shadow-lg;
+}
+
+.btn-primary {
+  @apply bg-primary text-white font-semibold px-4 py-2 rounded-lg hover:bg-primary/80 transition;
+}
+
+.btn-outline {
+  @apply border border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

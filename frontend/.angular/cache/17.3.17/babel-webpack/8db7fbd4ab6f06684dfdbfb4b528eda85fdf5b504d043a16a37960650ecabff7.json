@@ -1,0 +1,1 @@
+{"ast":null,"code":"import { PredioListComponent } from './components/predio-list.component';\nexport const PREDIOS_ROUTES = [{\n  path: '',\n  component: PredioListComponent\n}];","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

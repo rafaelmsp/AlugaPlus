@@ -1,0 +1,1 @@
+{"ast":null,"code":"import { RelatorioComponent } from './components/relatorio.component';\nexport const RELATORIOS_ROUTES = [{\n  path: '',\n  component: RelatorioComponent\n}];","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

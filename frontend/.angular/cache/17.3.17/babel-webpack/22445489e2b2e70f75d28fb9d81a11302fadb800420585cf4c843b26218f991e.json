@@ -1,0 +1,1 @@
+{"ast":null,"code":"import { FinanceiroComponent } from './financeiro.component';\nexport const FINANCEIRO_ROUTES = [{\n  path: '',\n  component: FinanceiroComponent\n}];","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

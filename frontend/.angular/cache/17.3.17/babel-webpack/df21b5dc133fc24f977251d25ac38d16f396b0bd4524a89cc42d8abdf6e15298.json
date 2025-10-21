@@ -1,0 +1,1 @@
+{"ast":null,"code":"import { PortalInquilinoComponent } from './components/portal-inquilino.component';\nexport const PORTAL_ROUTES = [{\n  path: '',\n  component: PortalInquilinoComponent\n}];","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}
