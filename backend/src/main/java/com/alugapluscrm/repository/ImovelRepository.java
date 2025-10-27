@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ImovelRepository extends JpaRepository<Imovel, Long> {
     List<Imovel> findByStatus(ImovelStatus status);
+    long countByTenantId(String tenantId);
 }

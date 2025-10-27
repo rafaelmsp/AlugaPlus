@@ -12,4 +12,5 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
     List<Contrato> findByInquilino(Inquilino inquilino);
     List<Contrato> findByStatus(ContratoStatus status);
     List<Contrato> findByDataFimBetween(LocalDate inicio, LocalDate fim);
+    long countByTenantId(String tenantId);
 }

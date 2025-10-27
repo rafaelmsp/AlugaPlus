@@ -1,0 +1,1 @@
+{"ast":null,"code":"import { CheckoutComponent } from './components/checkout.component';\nexport const ASSINATURAS_ROUTES = [{\n  path: 'checkout',\n  component: CheckoutComponent\n}, {\n  path: '',\n  pathMatch: 'full',\n  redirectTo: 'checkout'\n}];","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

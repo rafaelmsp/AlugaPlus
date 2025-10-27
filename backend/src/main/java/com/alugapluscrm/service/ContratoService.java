@@ -33,6 +33,7 @@ public class ContratoService {
     private final InquilinoRepository inquilinoRepository;
     private final NotificacaoService notificacaoService;
     private final FileStorageService fileStorageService;
+    private final AssinaturaService assinaturaService;
 
     @Cacheable(
             value = "contratos",
@@ -59,6 +60,7 @@ public class ContratoService {
     @Transactional
     @CacheEvict(value = {"contratos", "contrato", "imovel"}, allEntries = true)
     public ContratoDTO criar(ContratoDTO dto) {
+        assinaturaService.validarLimiteContratos(assinaturaService.totalContratosTenant());
         Contrato contrato = new Contrato();
         atualizarEntidade(contrato, dto);
         contrato.setTenantId(TenantContext.getTenantId());
@@ -71,6 +73,7 @@ public class ContratoService {
     @Transactional
     @CacheEvict(value = {"contratos", "contrato", "imovel"}, allEntries = true)
     public ContratoDTO criarComArquivo(ContratoDTO dto, MultipartFile arquivo) {
+        assinaturaService.validarLimiteContratos(assinaturaService.totalContratosTenant());
         Contrato contrato = new Contrato();
         atualizarEntidade(contrato, dto);
         contrato.setTenantId(TenantContext.getTenantId());

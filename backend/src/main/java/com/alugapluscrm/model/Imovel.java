@@ -2,8 +2,12 @@ package com.alugapluscrm.model;
 
 import com.alugapluscrm.model.enums.ImovelStatus;
 import com.alugapluscrm.model.enums.ImovelTipo;
+import com.alugapluscrm.tenant.TenantContext;
+import com.alugapluscrm.tenant.TenantEntityListener;
+import com.alugapluscrm.tenant.TenantScoped;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Filter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,12 +16,14 @@ import java.util.List;
 
 @Entity
 @Table(name = "imoveis")
+@EntityListeners(TenantEntityListener.class)
+@Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Imovel {
+public class Imovel implements TenantScoped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,13 +71,36 @@ public class Imovel {
     @Builder.Default
     private List<Manutencao> manutencoes = new ArrayList<>();
 
+    @Column(name = "tenant_id", nullable = false, length = 120)
+    private String tenantId;
+
     @PrePersist
     public void prePersist() {
+        if (tenantId == null) {
+            tenantId = TenantContext.getTenantId();
+        }
         if (dataCadastro == null) {
             dataCadastro = LocalDate.now();
         }
         if (status == null) {
             status = ImovelStatus.DISPONIVEL;
         }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (tenantId == null) {
+            tenantId = TenantContext.getTenantId();
+        }
+    }
+
+    @Override
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    @Override
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 }

@@ -1,5 +1,7 @@
 ﻿import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
+import { clienteGuard } from './core/guards/cliente.guard';
 import { portalGuard } from './core/guards/portal.guard';
 import { LandingComponent } from './modules/marketing/landing.component';
 
@@ -63,9 +65,19 @@ export const APP_ROUTES: Routes = [
     loadChildren: () => import('./modules/relatorios/relatorios.routes').then(m => m.RELATORIOS_ROUTES)
   },
   {
+    path: 'admin',
+    canActivate: [authGuard, adminGuard],
+    loadChildren: () => import('./modules/admin/admin.routes').then(m => m.ADMIN_ROUTES)
+  },
+  {
     path: 'portal',
     canActivate: [portalGuard],
     loadChildren: () => import('./modules/portal-inquilino/portal.routes').then(m => m.PORTAL_ROUTES)
+  },
+  {
+    path: 'assinaturas',
+    canActivate: [authGuard, clienteGuard],
+    loadChildren: () => import('./modules/assinaturas/assinaturas.routes').then(m => m.ASSINATURAS_ROUTES)
   },
   {
     path: '**',

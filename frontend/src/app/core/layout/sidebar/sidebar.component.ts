@@ -44,6 +44,7 @@ export class SidebarComponent {
 
   readonly menu: MenuItem[] = [
     { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
+    { icon: 'workspace_premium', label: 'Planos', route: '/admin/planos', roles: ['ADMIN'] },
     { icon: 'home', label: 'Imoveis', route: '/imoveis', roles: ['ADMIN','GESTOR'] },
     { icon: 'group', label: 'Inquilinos', route: '/inquilinos', roles: ['ADMIN','GESTOR'] },
     { icon: 'article', label: 'Contratos', route: '/contratos', roles: ['ADMIN','GESTOR'] },

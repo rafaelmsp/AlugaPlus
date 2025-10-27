@@ -22,6 +22,7 @@ public class ImovelService {
 
     private final ImovelRepository imovelRepository;
     private final PredioRepository predioRepository;
+    private final AssinaturaService assinaturaService;
 
     @Cacheable(value = "imoveis")
     public Page<ImovelDTO> listar(Pageable pageable) {
@@ -36,6 +37,7 @@ public class ImovelService {
     @Transactional
     @CacheEvict(value = {"imoveis", "imovel"}, allEntries = true)
     public ImovelDTO criar(ImovelDTO dto) {
+        assinaturaService.validarLimiteImoveis(assinaturaService.totalImoveisTenant());
         Imovel imovel = new Imovel();
         atualizarEntidade(imovel, dto);
         return toDto(imovelRepository.save(imovel));
