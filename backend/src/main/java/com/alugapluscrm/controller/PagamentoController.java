@@ -1,6 +1,7 @@
 package com.alugapluscrm.controller;
 
 import com.alugapluscrm.dto.PagamentoDTO;
+import com.alugapluscrm.dto.AtualizaStatusPagamentoRequest;
 import com.alugapluscrm.service.PagamentoService;
 import com.alugapluscrm.storage.FileStorageService;
 import jakarta.validation.Valid;
@@ -29,7 +30,7 @@ public class PagamentoController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR','INQUILINO')")
-    public PagamentoDTO buscar(@PathVariable Long id) {
+    public PagamentoDTO buscar(@PathVariable("id") Long id) {
         return pagamentoService.buscar(id);
     }
 
@@ -41,20 +42,27 @@ public class PagamentoController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<PagamentoDTO> atualizar(@PathVariable Long id, @RequestBody @Valid PagamentoDTO dto) {
+    public ResponseEntity<PagamentoDTO> atualizar(@PathVariable("id") Long id, @RequestBody @Valid PagamentoDTO dto) {
         return ResponseEntity.ok(pagamentoService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable("id") Long id) {
         pagamentoService.remover(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
+    public ResponseEntity<PagamentoDTO> atualizarStatus(@PathVariable("id") Long id,
+                                                        @RequestBody AtualizaStatusPagamentoRequest body) {
+        return ResponseEntity.ok(pagamentoService.atualizarStatus(id, body));
+    }
+
     @PostMapping(value = "/{id}/comprovante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR','INQUILINO')")
-    public ResponseEntity<PagamentoDTO> uploadComprovante(@PathVariable Long id,
+    public ResponseEntity<PagamentoDTO> uploadComprovante(@PathVariable("id") Long id,
                                                           @RequestPart("arquivo") MultipartFile arquivo) {
         String caminho = fileStorageService.storeComprovante(arquivo);
         return ResponseEntity.ok(pagamentoService.atualizarComprovante(id, caminho));

@@ -4,9 +4,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InquilinosService } from '../services/inquilinos.service';
 import { NotificationService } from '../../../core/services/notification.service';
-import { ApiService } from '../../../core/services/api.service';
 import { Usuario } from '../../../core/models/user.model';
 import { UsuariosService } from '../services/usuarios.service';
+import { ImoveisService } from '../../imoveis/services/imoveis.service';
+import { Imovel } from '../../../core/models/imovel.model';
 
 @Component({
   standalone: true,
@@ -43,17 +44,26 @@ import { UsuariosService } from '../services/usuarios.service';
           <textarea formControlName="observacoes" rows="4" class="input-control"></textarea>
         </div>
         <div class="md:col-span-2">
+          <label class="text-sm text-gray-400 block mb-1">Imovel vinculado</label>
+          <select formControlName="imovelId" class="input-control">
+            <option [ngValue]="null">Selecione um imovel</option>
+            <option *ngFor="let imovel of imoveis()" [ngValue]="imovel.id">
+              {{ imovel.descricao || imovel.endereco }} ({{ imovel.status }})
+            </option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
           <label class="text-sm text-gray-400 block mb-1">Usuario vinculado</label>
           <select formControlName="usuarioId" class="input-control">
             <option [ngValue]="null">Selecione um usuario</option>
-            <option *ngFor="let user of usuarios()" [value]="user.id">
+            <option *ngFor="let user of usuarios()" [ngValue]="user.id">
               {{ user.nome }} - {{ user.email }} ({{ user.role }})
             </option>
           </select>
         </div>
         <div class="md:col-span-2 flex justify-end gap-3">
           <button class="btn-outline" type="button" (click)="router.navigate(['/inquilinos'])">Cancelar</button>
-          <button class="btn-primary" type="submit" [disabled]="form.invalid || pending">Salvar</button>
+          <button class="btn-primary" type="submit" [disabled]="form.invalid || pending()">Salvar</button>
         </div>
       </form>
     </div>
@@ -71,10 +81,17 @@ export class InquilinoFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly notification = inject(NotificationService);
   private readonly usuariosService = inject(UsuariosService);
+  private readonly imoveisService = inject(ImoveisService);
+
+  constructor() {
+    this.loadUsuarios();
+    this.loadImoveis();
+  }
 
   readonly editing = signal(false);
   readonly pending = signal(false);
   readonly usuarios = signal<Usuario[]>([]);
+  readonly imoveis = signal<Imovel[]>([]);
 
   readonly form = this.fb.nonNullable.group({
     nome: ['', Validators.required],
@@ -83,7 +100,8 @@ export class InquilinoFormComponent implements OnInit {
     email: ['', [Validators.required, Validators.email]],
     endereco: [''],
     observacoes: [''],
-    usuarioId: [null as number | null]
+    usuarioId: [null as number | null],
+    imovelId: [null as number | null]
   });
 
   ngOnInit(): void {
@@ -99,13 +117,15 @@ export class InquilinoFormComponent implements OnInit {
             email: inquilino.email,
             endereco: inquilino.endereco ?? '',
             observacoes: inquilino.observacoes ?? '',
-            usuarioId: inquilino.usuario?.id ?? null
+            usuarioId: inquilino.usuario?.id ?? null,
+            imovelId: inquilino.imovelId ?? null
           });
         },
         error: () => this.notification.error('Nao foi possivel carregar o inquilino.')
       });
     }
     this.loadUsuarios();
+    this.loadImoveis();
   }
 
   submit(): void {
@@ -114,7 +134,12 @@ export class InquilinoFormComponent implements OnInit {
       return;
     }
     this.pending.set(true);
-    const payload = this.form.getRawValue();
+    const raw = this.form.getRawValue();
+    const payload = {
+      ...raw,
+      imovelId: raw.imovelId != null ? Number(raw.imovelId) : null,
+      usuarioId: raw.usuarioId != null ? Number(raw.usuarioId) : null
+    } as typeof raw;
     const id = Number(this.route.snapshot.paramMap.get('id'));
     const request = this.editing()
       ? this.service.update(id, payload)
@@ -136,6 +161,13 @@ export class InquilinoFormComponent implements OnInit {
     this.usuariosService.list().subscribe({
       next: users => this.usuarios.set(users),
       error: () => this.notification.warning('Nao foi possivel carregar usuarios.')
+    });
+  }
+
+  private loadImoveis(): void {
+    this.imoveisService.list().subscribe({
+      next: lista => this.imoveis.set(lista),
+      error: () => this.notification.warning('Nao foi possivel carregar imoveis.')
     });
   }
 }

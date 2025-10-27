@@ -3,8 +3,10 @@ package com.alugapluscrm.service;
 import com.alugapluscrm.dto.InquilinoDTO;
 import com.alugapluscrm.model.Inquilino;
 import com.alugapluscrm.model.Usuario;
+import com.alugapluscrm.model.Imovel;
 import com.alugapluscrm.repository.InquilinoRepository;
 import com.alugapluscrm.repository.UsuarioRepository;
+import com.alugapluscrm.repository.ImovelRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,13 +21,14 @@ public class InquilinoService {
 
     private final InquilinoRepository inquilinoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ImovelRepository imovelRepository;
 
     @Cacheable(value = "inquilinos")
     public Page<InquilinoDTO> listar(Pageable pageable) {
         return inquilinoRepository.findAll(pageable).map(this::toDto);
     }
 
-    @Cacheable(value = "inquilino", key = "#id")
+    @Cacheable(value = "inquilino", key = "#p0")
     public InquilinoDTO buscar(Long id) {
         return toDto(buscarEntidade(id));
     }
@@ -84,10 +87,19 @@ public class InquilinoService {
         } else {
             inquilino.setUsuario(null);
         }
+
+        if (dto.imovelId() != null) {
+            Imovel imovel = imovelRepository.findById(dto.imovelId())
+                    .orElseThrow(() -> new IllegalArgumentException("Imovel nao encontrado"));
+            inquilino.setImovel(imovel);
+        } else {
+            inquilino.setImovel(null);
+        }
     }
 
     private InquilinoDTO toDto(Inquilino inquilino) {
         Long usuarioId = inquilino.getUsuario() != null ? inquilino.getUsuario().getId() : null;
+        Long imovelId = inquilino.getImovel() != null ? inquilino.getImovel().getId() : null;
         return new InquilinoDTO(
                 inquilino.getId(),
                 inquilino.getNome(),
@@ -96,7 +108,8 @@ public class InquilinoService {
                 inquilino.getEmail(),
                 inquilino.getEndereco(),
                 inquilino.getObservacoes(),
-                usuarioId
+                usuarioId,
+                imovelId
         );
     }
 }

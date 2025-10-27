@@ -24,7 +24,7 @@ public class NotificacaoController {
 
     @PostMapping("/pagamentos/{id}/aviso")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> dispararAvisoVencimento(@PathVariable Long id) {
+    public ResponseEntity<Void> dispararAvisoVencimento(@PathVariable("id") Long id) {
         Pagamento pagamento = pagamentoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Pagamento nao encontrado"));
         notificacaoService.notificacaoVencimento(pagamento);
@@ -33,7 +33,7 @@ public class NotificacaoController {
 
     @PostMapping("/pagamentos/{id}/atraso")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> dispararAvisoAtraso(@PathVariable Long id) {
+    public ResponseEntity<Void> dispararAvisoAtraso(@PathVariable("id") Long id) {
         Pagamento pagamento = pagamentoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Pagamento nao encontrado"));
         notificacaoService.notificacaoAtraso(pagamento);
@@ -42,7 +42,7 @@ public class NotificacaoController {
 
     @PostMapping("/contratos/{id}/renovacao")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> dispararAvisoRenovacao(@PathVariable Long id) {
+    public ResponseEntity<Void> dispararAvisoRenovacao(@PathVariable("id") Long id) {
         Contrato contrato = contratoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Contrato nao encontrado"));
         notificacaoService.notificacaoRenovacaoContrato(contrato);

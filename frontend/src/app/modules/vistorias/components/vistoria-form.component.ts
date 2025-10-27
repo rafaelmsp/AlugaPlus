@@ -1,9 +1,13 @@
-﻿import { Component, inject, signal } from '@angular/core';
+﻿import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NgxDropzoneChangeEvent, NgxDropzoneModule } from 'ngx-dropzone';
 import { LightboxModule } from 'ngx-lightbox';
+import { VistoriaService } from '../services/vistoria.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { ImoveisService } from '../../imoveis/services/imoveis.service';
+import { Imovel } from '../../../core/models/imovel.model';
 
 interface FotoPreview {
   src: string;
@@ -14,18 +18,29 @@ interface FotoPreview {
 @Component({
   standalone: true,
   selector: 'app-vistoria-form',
-  imports: [CommonModule, ReactiveFormsModule, NgxDropzoneModule, LightboxModule],
+  imports: [CommonModule, ReactiveFormsModule, NgxDropzoneModule, LightboxModule, RouterLink],
   template: `
     <div class="max-w-3xl mx-auto card">
       <h1 class="text-2xl font-semibold text-primary mb-6">Registro de vistoria</h1>
       <form [formGroup]="form" class="grid md:grid-cols-2 gap-4">
         <div>
-          <label class="text-sm text-gray-400 block mb-1">Imovel</label>
-          <input formControlName="imovelId" class="input-control" placeholder="ID do imovel">
+          <label class="text-sm text-gray-400 block mb-1">Imóvel</label>
+          <select formControlName="imovelId" class="input-control">
+            <option [ngValue]="null">Selecione o imóvel</option>
+            <option *ngFor="let imovel of imoveis()" [ngValue]="imovel.id">
+              {{ imovel.endereco }} - {{ imovel.tipo }}
+            </option>
+          </select>
+          <div *ngIf="form.get('imovelId')?.touched && form.get('imovelId')?.errors?.['required']" class="text-xs text-red-500 mt-1">
+            Selecione um imóvel
+          </div>
+          <div *ngIf="!imoveis().length" class="text-xs text-gray-500 mt-1">
+            Nenhum imóvel cadastrado. <a routerLink="/imoveis/novo" class="text-primary hover:underline">Cadastre um imóvel</a>
+          </div>
         </div>
         <div>
           <label class="text-sm text-gray-400 block mb-1">Contrato</label>
-          <input formControlName="contratoId" class="input-control" placeholder="ID do contrato (opcional)">
+          <input type="number" min="1" formControlName="contratoId" class="input-control" placeholder="ID do contrato (opcional)">
         </div>
         <div>
           <label class="text-sm text-gray-400 block mb-1">Data da vistoria</label>
@@ -83,15 +98,32 @@ interface FotoPreview {
     }
   `]
 })
-export class VistoriaFormComponent {
+export class VistoriaFormComponent implements OnInit {
   private readonly fb = new FormBuilder();
   readonly router = inject(Router);
+  private readonly imoveisService = inject(ImoveisService);
+  
+  readonly imoveis = signal<Imovel[]>([]);
+  
+  ngOnInit(): void {
+    this.loadImoveis();
+  }
+  
+  private loadImoveis(): void {
+    this.imoveisService.list().subscribe({
+      next: (imoveis) => this.imoveis.set(imoveis),
+      error: (error) => {
+        console.error('Erro ao carregar imóveis', error);
+        this.notification.error('Erro ao carregar a lista de imóveis');
+      }
+    });
+  }
 
   readonly form = this.fb.nonNullable.group({
-    imovelId: ['', Validators.required],
-    contratoId: [''],
+    imovelId: [null as number | null, Validators.required],
+    contratoId: [null as number | null],
     dataVistoria: ['', Validators.required],
-    tipo: ['ENTRADA', Validators.required],
+    tipo: ['ENTRADA' as 'ENTRADA' | 'SAIDA' | 'ROTINA', Validators.required],
     observacoes: [''],
     avaliacao: [null as number | null]
   });
@@ -118,13 +150,53 @@ export class VistoriaFormComponent {
     }
   }
 
+  private readonly vistoriaService = inject(VistoriaService);
+  private readonly notification = inject(NotificationService);
+  private readonly pending = signal(false);
+
   save(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.pending()) {
       this.form.markAllAsTouched();
       return;
     }
-    // TODO: Integrar com API de vistorias.
-    this.router.navigate(['/vistorias']);
+    
+    this.pending.set(true);
+    const value = this.form.getRawValue();
+    
+    this.vistoriaService.criar({
+      imovelId: Number(value.imovelId),
+      contratoId: value.contratoId ? Number(value.contratoId) : undefined,
+      dataVistoria: value.dataVistoria,
+      tipo: value.tipo,
+      observacoes: value.observacoes,
+      avaliacao: value.avaliacao || undefined
+    }).subscribe({
+      next: (vistoria) => {
+        if (this.files().length > 0) {
+          this.vistoriaService.uploadFotos(vistoria.id!, this.files()).subscribe({
+            next: () => {
+              this.notification.success('Vistoria registrada com sucesso');
+              this.router.navigate(['/vistorias']);
+            },
+            error: (error) => {
+              console.error('Erro ao fazer upload das fotos', error);
+              const message = error?.error?.message ?? 'Erro ao fazer upload das fotos';
+              this.notification.error(message);
+              this.pending.set(false);
+            }
+          });
+        } else {
+          this.notification.success('Vistoria registrada com sucesso');
+          this.router.navigate(['/vistorias']);
+        }
+      },
+      error: (error) => {
+        console.error('Erro ao salvar vistoria', error);
+        const message = error?.error?.message ?? 'Erro ao salvar vistoria';
+        this.notification.error(message);
+        this.pending.set(false);
+      }
+    });
   }
 
   private createPreview(file: File): void {

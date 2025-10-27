@@ -2,8 +2,6 @@ package com.alugapluscrm.controller;
 
 import com.alugapluscrm.dto.ContratoDTO;
 import com.alugapluscrm.service.ContratoService;
-import com.alugapluscrm.storage.FileStorageService;
-import com.alugapluscrm.util.HashUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/contratos")
@@ -21,7 +18,6 @@ import java.io.IOException;
 public class ContratoController {
 
     private final ContratoService contratoService;
-    private final FileStorageService fileStorageService;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
@@ -31,7 +27,7 @@ public class ContratoController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR','INQUILINO')")
-    public ContratoDTO buscar(@PathVariable Long id) {
+    public ContratoDTO buscar(@PathVariable("id") Long id) {
         return contratoService.buscar(id);
     }
 
@@ -41,29 +37,31 @@ public class ContratoController {
         return ResponseEntity.ok(contratoService.criar(dto));
     }
 
+    @PostMapping(value = "/com-arquivo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
+    public ResponseEntity<ContratoDTO> criarComArquivo(
+            @RequestPart("dados") @Valid ContratoDTO dto,
+            @RequestPart(value = "arquivo", required = false) MultipartFile arquivo) {
+        return ResponseEntity.ok(contratoService.criarComArquivo(dto, arquivo));
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<ContratoDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ContratoDTO dto) {
+    public ResponseEntity<ContratoDTO> atualizar(@PathVariable("id") Long id, @RequestBody @Valid ContratoDTO dto) {
         return ResponseEntity.ok(contratoService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable("id") Long id) {
         contratoService.remover(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping(value = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<ContratoDTO> uploadContrato(@PathVariable Long id,
+    public ResponseEntity<ContratoDTO> uploadContrato(@PathVariable("id") Long id,
                                                       @RequestPart("arquivo") MultipartFile arquivo) {
-        try {
-            String hash = HashUtil.sha256(arquivo.getInputStream());
-            String caminho = fileStorageService.storeContrato(arquivo);
-            return ResponseEntity.ok(contratoService.atualizarArquivo(id, caminho, hash));
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao processar arquivo de contrato", e);
-        }
+        return ResponseEntity.ok(contratoService.atualizarArquivo(id, arquivo));
     }
 }

@@ -25,7 +25,7 @@ public class FinanceiroController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public MovimentacaoFinanceiraDTO buscar(@PathVariable Long id) {
+    public MovimentacaoFinanceiraDTO buscar(@PathVariable("id") Long id) {
         return movimentacaoFinanceiraService.buscar(id);
     }
 
@@ -37,14 +37,14 @@ public class FinanceiroController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<MovimentacaoFinanceiraDTO> atualizar(@PathVariable Long id,
+    public ResponseEntity<MovimentacaoFinanceiraDTO> atualizar(@PathVariable("id") Long id,
                                                                @RequestBody @Valid MovimentacaoFinanceiraDTO dto) {
         return ResponseEntity.ok(movimentacaoFinanceiraService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable("id") Long id) {
         movimentacaoFinanceiraService.remover(id);
         return ResponseEntity.noContent().build();
     }

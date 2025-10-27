@@ -24,5 +24,9 @@ export class PrediosService {
   remove(id: number): Observable<void> {
     return this.api.delete<void>(`/predios/${id}`);
   }
+
+  update(id: number, payload: Predio): Observable<Predio> {
+    return this.api.put<Predio>(`/predios/${id}`, payload);
+  }
 }
 

@@ -31,7 +31,7 @@ public class ManutencaoController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ManutencaoDTO buscar(@PathVariable Long id) {
+    public ManutencaoDTO buscar(@PathVariable("id") Long id) {
         return manutencaoService.buscar(id);
     }
 
@@ -43,20 +43,20 @@ public class ManutencaoController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<ManutencaoDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ManutencaoDTO dto) {
+    public ResponseEntity<ManutencaoDTO> atualizar(@PathVariable("id") Long id, @RequestBody @Valid ManutencaoDTO dto) {
         return ResponseEntity.ok(manutencaoService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable("id") Long id) {
         manutencaoService.remover(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping(value = "/{id}/fotos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<ManutencaoDTO> uploadFotos(@PathVariable Long id,
+    public ResponseEntity<ManutencaoDTO> uploadFotos(@PathVariable("id") Long id,
                                                      @RequestPart("fotos") List<MultipartFile> fotos) {
         List<String> caminhos = fileStorageService.storeManutencaoFotos(fotos);
         return ResponseEntity.ok(manutencaoService.atualizarFotos(id, caminhos));

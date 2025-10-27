@@ -25,7 +25,7 @@ public class ContaPredioController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ContaPredioDTO buscar(@PathVariable Long id) {
+    public ContaPredioDTO buscar(@PathVariable("id") Long id) {
         return contaPredioService.buscar(id);
     }
 
@@ -37,13 +37,13 @@ public class ContaPredioController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<ContaPredioDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ContaPredioDTO dto) {
+    public ResponseEntity<ContaPredioDTO> atualizar(@PathVariable("id") Long id, @RequestBody @Valid ContaPredioDTO dto) {
         return ResponseEntity.ok(contaPredioService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable("id") Long id) {
         contaPredioService.remover(id);
         return ResponseEntity.noContent().build();
     }

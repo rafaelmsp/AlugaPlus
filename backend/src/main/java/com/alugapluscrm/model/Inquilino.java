@@ -39,6 +39,10 @@ public class Inquilino {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "imovel_id")
+    private Imovel imovel;
+
     @OneToMany(mappedBy = "inquilino", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Contrato> contratos = new ArrayList<>();

@@ -25,6 +25,14 @@ import java.util.stream.Collectors;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private static final String[] PUBLIC_UPLOAD_PATHS = {
+            "/uploads/**",
+            "/contracts/**",
+            "/comprovantes/**",
+            "/vistorias/**",
+            "/manutencoes/**"
+    };
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UsuarioService usuarioService;
     private final String allowedOrigins;
@@ -46,6 +54,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/actuator/health").permitAll()
+                        .requestMatchers(PUBLIC_UPLOAD_PATHS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)

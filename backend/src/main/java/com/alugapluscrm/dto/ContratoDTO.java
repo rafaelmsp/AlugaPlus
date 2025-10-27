@@ -17,6 +17,8 @@ public record ContratoDTO(
         String arquivoPdf,
         String hashDocumento,
         LocalDateTime dataUpload,
-        String observacao
+        String observacao,
+        String imovelDescricao,
+        String inquilinoNome
 ) {
 }

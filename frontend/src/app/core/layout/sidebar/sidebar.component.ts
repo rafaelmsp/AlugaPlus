@@ -44,15 +44,15 @@ export class SidebarComponent {
 
   readonly menu: MenuItem[] = [
     { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
-    { icon: 'home', label: 'Imoveis', route: '/imoveis' },
-    { icon: 'group', label: 'Inquilinos', route: '/inquilinos' },
-    { icon: 'article', label: 'Contratos', route: '/contratos' },
-    { icon: 'inventory', label: 'Vistorias', route: '/vistorias' },
-    { icon: 'payments', label: 'Financeiro', route: '/financeiro' },
-    { icon: 'apartment', label: 'Predios', route: '/predios' },
-    { icon: 'receipt_long', label: 'Contas do Predio', route: '/contas-predio' },
-    { icon: 'build', label: 'Manutencoes', route: '/manutencoes' },
-    { icon: 'summarize', label: 'Relatorios', route: '/relatorios' },
+    { icon: 'home', label: 'Imoveis', route: '/imoveis', roles: ['ADMIN','GESTOR'] },
+    { icon: 'group', label: 'Inquilinos', route: '/inquilinos', roles: ['ADMIN','GESTOR'] },
+    { icon: 'article', label: 'Contratos', route: '/contratos', roles: ['ADMIN','GESTOR'] },
+    { icon: 'inventory', label: 'Vistorias', route: '/vistorias', roles: ['ADMIN','GESTOR'] },
+    { icon: 'payments', label: 'Financeiro', route: '/financeiro', roles: ['ADMIN','GESTOR'] },
+    { icon: 'apartment', label: 'Predios', route: '/predios', roles: ['ADMIN','GESTOR'] },
+    { icon: 'receipt_long', label: 'Contas do Predio', route: '/contas-predio', roles: ['ADMIN','GESTOR'] },
+    { icon: 'build', label: 'Manutencoes', route: '/manutencoes', roles: ['ADMIN','GESTOR'] },
+    { icon: 'summarize', label: 'Relatorios', route: '/relatorios', roles: ['ADMIN','GESTOR'] },
     { icon: 'person', label: 'Portal Inquilino', route: '/portal', roles: ['INQUILINO'] }
   ];
 

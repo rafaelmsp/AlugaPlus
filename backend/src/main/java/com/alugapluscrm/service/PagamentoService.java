@@ -1,6 +1,7 @@
 package com.alugapluscrm.service;
 
 import com.alugapluscrm.dto.PagamentoDTO;
+import com.alugapluscrm.dto.AtualizaStatusPagamentoRequest;
 import com.alugapluscrm.model.Contrato;
 import com.alugapluscrm.model.Pagamento;
 import com.alugapluscrm.model.enums.PagamentoStatus;
@@ -48,6 +49,27 @@ public class PagamentoService {
     public PagamentoDTO atualizar(Long id, PagamentoDTO dto) {
         Pagamento pagamento = buscarEntidade(id);
         atualizarEntidade(pagamento, dto);
+        Pagamento salvo = pagamentoRepository.save(pagamento);
+        sincronizarMovimentacao(salvo);
+        return toDto(salvo);
+    }
+
+    @Transactional
+    @CacheEvict(value = {"pagamentos", "pagamento"}, allEntries = true)
+    public PagamentoDTO atualizarStatus(Long id, AtualizaStatusPagamentoRequest req) {
+        if (req == null || req.status() == null) {
+            throw new IllegalArgumentException("Status do pagamento é obrigatório");
+        }
+        Pagamento pagamento = buscarEntidade(id);
+        pagamento.setStatus(req.status());
+        if (req.dataPagamento() != null) {
+            pagamento.setDataPagamento(req.dataPagamento());
+        } else if (req.status() == PagamentoStatus.PAGO && pagamento.getDataPagamento() == null) {
+            pagamento.setDataPagamento(java.time.LocalDate.now());
+        }
+        if (req.observacao() != null && !req.observacao().isBlank()) {
+            pagamento.setObservacao(req.observacao());
+        }
         Pagamento salvo = pagamentoRepository.save(pagamento);
         sincronizarMovimentacao(salvo);
         return toDto(salvo);

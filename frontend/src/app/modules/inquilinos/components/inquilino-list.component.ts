@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { InquilinosService } from '../services/inquilinos.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Inquilino } from '../../../core/models/inquilino.model';
+import { ImoveisService } from '../../imoveis/services/imoveis.service';
+import { Imovel } from '../../../core/models/imovel.model';
 
 @Component({
   standalone: true,
@@ -25,9 +27,10 @@ import { Inquilino } from '../../../core/models/inquilino.model';
             <tr>
               <th class="py-3">Nome</th>
               <th class="py-3">CPF</th>
+              <th class="py-3">Imóvel</th>
               <th class="py-3">Email</th>
               <th class="py-3">Telefone</th>
-              <th class="py-3 text-right">Acoeses</th>
+              <th class="py-3 text-right">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -37,6 +40,7 @@ import { Inquilino } from '../../../core/models/inquilino.model';
                 <div class="text-xs text-gray-400">Usuario: {{ inquilino.usuario?.email || 'Nao vinculado' }}</div>
               </td>
               <td class="py-3">{{ inquilino.cpf }}</td>
+              <td class="py-3">{{ imovelLabel(inquilino.imovelId) }}</td>
               <td class="py-3">{{ inquilino.email }}</td>
               <td class="py-3">{{ inquilino.telefone || '-' }}</td>
               <td class="py-3 text-right flex gap-2 justify-end">
@@ -59,11 +63,14 @@ import { Inquilino } from '../../../core/models/inquilino.model';
 export class InquilinoListComponent implements OnInit {
   private readonly service = inject(InquilinosService);
   private readonly notification = inject(NotificationService);
+  private readonly imoveisService = inject(ImoveisService);
 
   readonly inquilinos = signal<Inquilino[]>([]);
+  readonly imoveis = signal<Imovel[]>([]);
 
   ngOnInit(): void {
     this.load();
+    this.loadImoveis();
   }
 
   load(): void {
@@ -71,6 +78,21 @@ export class InquilinoListComponent implements OnInit {
       next: data => this.inquilinos.set(data),
       error: () => this.notification.error('Nao foi possivel carregar os inquilinos.')
     });
+  }
+
+  private loadImoveis(): void {
+    this.imoveisService.list().subscribe({
+      next: data => this.imoveis.set(data),
+      error: () => this.notification.warning('Nao foi possivel carregar imoveis.')
+    });
+  }
+
+  imovelLabel(imovelId?: number | null): string {
+    if (!imovelId) return 'Nao vinculado';
+    const imovel = this.imoveis().find(i => i.id === imovelId);
+    if (!imovel) return `#${imovelId}`;
+    const desc = (imovel as any).descricao || imovel.endereco;
+    return `${desc} (${imovel.status})`;
   }
 
   remove(id?: number): void {

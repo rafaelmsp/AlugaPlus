@@ -31,7 +31,7 @@ public class VistoriaController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR','INQUILINO')")
-    public VistoriaDTO buscar(@PathVariable Long id) {
+    public VistoriaDTO buscar(@PathVariable("id") Long id) {
         return vistoriaService.buscar(id);
     }
 
@@ -43,20 +43,20 @@ public class VistoriaController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<VistoriaDTO> atualizar(@PathVariable Long id, @RequestBody @Valid VistoriaDTO dto) {
+    public ResponseEntity<VistoriaDTO> atualizar(@PathVariable("id") Long id, @RequestBody @Valid VistoriaDTO dto) {
         return ResponseEntity.ok(vistoriaService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable("id") Long id) {
         vistoriaService.remover(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping(value = "/{id}/fotos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<VistoriaDTO> uploadFotos(@PathVariable Long id,
+    public ResponseEntity<VistoriaDTO> uploadFotos(@PathVariable("id") Long id,
                                                    @RequestPart("fotos") List<MultipartFile> fotos) {
         List<String> caminhos = fileStorageService.storeVistoriaFotos(fotos);
         return ResponseEntity.ok(vistoriaService.atualizarFotos(id, caminhos));

@@ -44,36 +44,41 @@ public class FileStorageService {
         criarDiretorioSeNecessario(manutencoesPath);
     }
 
+    private static final String CONTRACTS_PUBLIC_DIR = "contracts";
+    private static final String VISTORIAS_PUBLIC_DIR = "vistorias";
+    private static final String COMPROVANTES_PUBLIC_DIR = "comprovantes";
+    private static final String MANUTENCOES_PUBLIC_DIR = "manutencoes";
+
     public String storeContrato(MultipartFile file) {
-        return armazenar(file, contratosPath);
+        return armazenar(file, contratosPath, CONTRACTS_PUBLIC_DIR);
     }
 
     public String storeComprovante(MultipartFile file) {
-        return armazenar(file, comprovantesPath);
+        return armazenar(file, comprovantesPath, COMPROVANTES_PUBLIC_DIR);
     }
 
     public List<String> storeVistoriaFotos(List<MultipartFile> files) {
-        return armazenarLista(files, vistoriasPath);
+        return armazenarLista(files, vistoriasPath, VISTORIAS_PUBLIC_DIR);
     }
 
     public List<String> storeManutencaoFotos(List<MultipartFile> files) {
-        return armazenarLista(files, manutencoesPath);
+        return armazenarLista(files, manutencoesPath, MANUTENCOES_PUBLIC_DIR);
     }
 
-    private List<String> armazenarLista(List<MultipartFile> files, String destino) {
+    private List<String> armazenarLista(List<MultipartFile> files, String destino, String publicDir) {
         List<String> caminhos = new ArrayList<>();
         if (files == null) {
             return caminhos;
         }
         for (MultipartFile file : files) {
             if (file != null && !file.isEmpty()) {
-                caminhos.add(armazenar(file, destino));
+                caminhos.add(armazenar(file, destino, publicDir));
             }
         }
         return caminhos;
     }
 
-    private String armazenar(MultipartFile file, String destino) {
+    private String armazenar(MultipartFile file, String destino, String publicDir) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Arquivo invalido para upload");
         }
@@ -86,10 +91,18 @@ public class FileStorageService {
             String filename = UUID.randomUUID() + "_" + originalFilename;
             Path targetLocation = Paths.get(destino).resolve(filename).normalize();
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            return targetLocation.toString();
+            return buildPublicPath(publicDir, filename);
         } catch (IOException e) {
             throw new RuntimeException("Falha ao armazenar arquivo", e);
         }
+    }
+
+    private String buildPublicPath(String dir, String filename) {
+        String sanitizedDir = (dir == null || dir.isBlank()) ? "" : dir.replaceAll("^/+", "").replaceAll("/+$", "");
+        if (sanitizedDir.isBlank()) {
+            return "/" + filename;
+        }
+        return "/" + sanitizedDir + "/" + filename;
     }
 
     private void criarDiretorioSeNecessario(String path) throws IOException {

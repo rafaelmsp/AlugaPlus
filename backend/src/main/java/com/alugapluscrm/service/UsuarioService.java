@@ -38,7 +38,7 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Transactional
-    @CacheEvict(value = "usuarios", allEntries = true)
+    @CacheEvict(value = {"usuarios", "usuariosList"}, allEntries = true)
     public Usuario registrar(RegisterRequest request) {
         if (usuarioRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("Email ja cadastrado");

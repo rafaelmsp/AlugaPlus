@@ -25,7 +25,7 @@ public class PredioController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public PredioDTO buscar(@PathVariable Long id) {
+    public PredioDTO buscar(@PathVariable("id") Long id) {
         return predioService.buscar(id);
     }
 
@@ -37,13 +37,13 @@ public class PredioController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<PredioDTO> atualizar(@PathVariable Long id, @RequestBody @Valid PredioDTO dto) {
+    public ResponseEntity<PredioDTO> atualizar(@PathVariable("id") Long id, @RequestBody @Valid PredioDTO dto) {
         return ResponseEntity.ok(predioService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable("id") Long id) {
         predioService.remover(id);
         return ResponseEntity.noContent().build();
     }

@@ -13,8 +13,27 @@
     "lib": [
       "es2022",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@core/*": ["src/app/core/*"],
+      "@shared/*": ["src/app/shared/*"],
+      "@env/*": ["src/environments/*"]
+    },
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
+  "files": [
+    "src/main.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,

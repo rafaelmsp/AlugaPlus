@@ -18,7 +18,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<UsuarioDTO> listar(Pageable pageable) {
         return usuarioService.listar(pageable);
     }

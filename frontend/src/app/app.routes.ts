@@ -1,12 +1,12 @@
 ﻿import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { portalGuard } from './core/guards/portal.guard';
+import { LandingComponent } from './modules/marketing/landing.component';
 
 export const APP_ROUTES: Routes = [
   {
     path: '',
-    pathMatch: 'full',
-    redirectTo: 'dashboard'
+    component: LandingComponent
   },
   {
     path: 'auth',

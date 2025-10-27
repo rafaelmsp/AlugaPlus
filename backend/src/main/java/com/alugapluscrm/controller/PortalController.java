@@ -42,21 +42,21 @@ public class PortalController {
 
     @GetMapping("/contratos/{contratoId}/pagamentos")
     @PreAuthorize("hasRole('INQUILINO')")
-    public List<PagamentoDTO> meusPagamentos(@PathVariable Long contratoId) {
+    public List<PagamentoDTO> meusPagamentos(@PathVariable("contratoId") Long contratoId) {
         validarContrato(contratoId);
         return pagamentoService.listarPorContrato(contratoId);
     }
 
     @GetMapping("/contratos/{contratoId}/vistorias")
     @PreAuthorize("hasRole('INQUILINO')")
-    public List<VistoriaDTO> minhasVistorias(@PathVariable Long contratoId) {
+    public List<VistoriaDTO> minhasVistorias(@PathVariable("contratoId") Long contratoId) {
         validarContrato(contratoId);
         return vistoriaService.listarPorContrato(contratoId);
     }
 
     @PostMapping(value = "/pagamentos/{id}/comprovante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('INQUILINO')")
-    public ResponseEntity<PagamentoDTO> enviarComprovante(@PathVariable Long id,
+    public ResponseEntity<PagamentoDTO> enviarComprovante(@PathVariable("id") Long id,
                                                           @RequestPart("arquivo") MultipartFile arquivo) {
         PagamentoDTO pagamento = pagamentoService.buscar(id);
         validarContrato(pagamento.contratoId());

@@ -1,0 +1,103 @@
+<div class="landing-page">
+  <header class="landing-nav" [class.scrolled]="isScrolled">
+    <div class="nav-content">
+      <div class="brand">AlugaPlus CRM Pro</div>
+      <nav>
+        <a [routerLink]="['/']" fragment="recursos">Recursos</a>
+        <a [routerLink]="['/']" fragment="planos">Planos</a>
+        <a [routerLink]="['/']" fragment="contato">Contato</a>
+        <a routerLink="/auth/login" class="link-ghost">Entrar</a>
+        <a routerLink="/auth/register" class="btn-primary">Cadastrar</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-content">
+        <p class="badge">Plataforma completa para imobiliárias modernas</p>
+        <h1>Gerencie sua Imobiliária de forma Inteligente</h1>
+        <p class="subtitle">
+          Centralize locações, contratos, pagamentos e manutenção em um só lugar com o AlugaPlus CRM Pro.
+        </p>
+        <div class="hero-actions">
+          <a routerLink="/auth/register" class="btn-primary">Criar Conta Grátis</a>
+          <a routerLink="/demo" class="btn-outline">Solicitar Demonstração</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="benefits" id="recursos">
+      <div class="section-heading">
+        <h2>Por que escolher o AlugaPlus?</h2>
+        <p>Recursos pensados para acelerar o dia a dia das administradoras e imobiliárias.</p>
+      </div>
+      <div class="benefit-grid">
+        <article>
+          <div class="icon">🏠</div>
+          <h3>Gestão de Imóveis</h3>
+          <p>Cadastre imóveis, contratos e inquilinos com rapidez e segurança.</p>
+        </article>
+        <article>
+          <div class="icon">💰</div>
+          <h3>Controle Financeiro</h3>
+          <p>Automatize boletos, PIX e relatórios financeiros.</p>
+        </article>
+        <article>
+          <div class="icon">📊</div>
+          <h3>Painel de Indicadores</h3>
+          <p>Visualize lucros, inadimplência e desempenho em tempo real.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="plans" id="planos">
+      <div class="section-heading light">
+        <h2>Planos para cada fase da sua empresa</h2>
+        <p>Escolha a melhor opção e comece a transformar sua operação hoje.</p>
+      </div>
+      <div class="plan-grid">
+        <article class="plan-card">
+          <h3>Básico</h3>
+          <p class="price">R$49<span>/mês</span></p>
+          <ul>
+            <li>Até 50 imóveis</li>
+            <li>Dashboard financeiro</li>
+            <li>Suporte em horário comercial</li>
+          </ul>
+          <a routerLink="/auth/register" class="btn-outline light">Começar agora</a>
+        </article>
+        <article class="plan-card featured">
+          <div class="chip">Recomendado</div>
+          <h3>Profissional</h3>
+          <p class="price">R$99<span>/mês</span></p>
+          <ul>
+            <li>Imóveis ilimitados</li>
+            <li>Automação de cobrança</li>
+            <li>Integração com portais</li>
+            <li>Suporte prioritário</li>
+          </ul>
+          <a routerLink="/auth/register" class="btn-primary">Começar agora</a>
+        </article>
+        <article class="plan-card">
+          <h3>Enterprise</h3>
+          <p class="price">Sob consulta</p>
+          <ul>
+            <li>Implantação dedicada</li>
+            <li>APIs personalizadas</li>
+            <li>Treinamentos exclusivos</li>
+          </ul>
+          <a routerLink="/contato" class="btn-outline light">Fale com vendas</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer" id="contato">
+    <p>© 2025 AlugaPlus CRM Pro — Todos os direitos reservados.</p>
+    <div class="footer-links">
+      <a routerLink="/politica-privacidade">Política de Privacidade</a>
+      <a routerLink="/termos">Termos de Uso</a>
+    </div>
+  </footer>
+</div>

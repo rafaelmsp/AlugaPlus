@@ -9,7 +9,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/inquilinos")
@@ -27,7 +34,7 @@ public class InquilinoController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public InquilinoDTO buscar(@PathVariable Long id) {
+    public InquilinoDTO buscar(@PathVariable("id") Long id) {
         return inquilinoService.buscar(id);
     }
 
@@ -46,14 +53,15 @@ public class InquilinoController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<InquilinoDTO> atualizar(@PathVariable Long id, @RequestBody InquilinoDTO dto) {
+    public ResponseEntity<InquilinoDTO> atualizar(@PathVariable("id") Long id, @RequestBody InquilinoDTO dto) {
         return ResponseEntity.ok(inquilinoService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR')")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable("id") Long id) {
         inquilinoService.remover(id);
         return ResponseEntity.noContent().build();
     }
 }
+

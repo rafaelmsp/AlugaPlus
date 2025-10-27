@@ -41,9 +41,12 @@ import { Predio } from '../../../core/models/predio.model';
             <label class="text-xs text-gray-400 block mb-1">Observacoes</label>
             <textarea formControlName="observacoes" rows="1" class="input-control"></textarea>
           </div>
-          <div class="flex items-center justify-end">
-            <button class="btn-primary text-sm h-11 md:self-center w-full" type="submit" [disabled]="pending()">
-              {{ pending() ? 'Adicionando...' : 'Adicionar' }}
+          <div class="flex items-center justify-end gap-2">
+            <button *ngIf="editing()" type="button" class="btn-outline text-sm h-11 w-full" (click)="cancelEdit()">
+              Cancelar
+            </button>
+            <button class="btn-primary text-sm h-11 w-full" type="submit" [disabled]="pending()">
+              {{ pending() ? (editing() ? 'Atualizando...' : 'Adicionando...') : (editing() ? 'Atualizar' : 'Adicionar') }}
             </button>
           </div>
         </form>
@@ -64,7 +67,14 @@ import { Predio } from '../../../core/models/predio.model';
           <p class="text-sm text-gray-300">Sindico: {{ predio.sindico || 'Nao informado' }}</p>
           <p class="text-sm text-gray-300" *ngIf="predio.contato">Contato: {{ predio.contato }}</p>
           <p class="text-sm text-gray-400" *ngIf="predio.observacoes">{{ predio.observacoes }}</p>
-          <div class="flex justify-end">
+          <div class="flex justify-end gap-2">
+            <button
+              class="btn-outline text-xs px-3 py-1"
+              type="button"
+              (click)="edit(predio)"
+              [disabled]="pending()">
+              Editar
+            </button>
             <button
               class="btn-outline text-xs px-3 py-1 border-rose-400 text-rose-400 hover:bg-rose-500/10"
               type="button"
@@ -96,6 +106,7 @@ export class PredioListComponent {
   readonly loading = signal<boolean>(false);
   readonly pending = signal<boolean>(false);
   readonly removingId = signal<number | null>(null);
+  readonly editing = signal<Predio | null>(null);
 
   readonly form = this.fb.nonNullable.group({
     nome: ['', Validators.required],
@@ -132,6 +143,7 @@ export class PredioListComponent {
     this.pending.set(true);
     const value = this.form.getRawValue();
     const payload: Predio = {
+      ...(this.editing() ? { id: this.editing()?.id } : {}),
       nome: value.nome,
       endereco: value.endereco,
       numeroUnidades: Number(value.numeroUnidades),
@@ -139,9 +151,13 @@ export class PredioListComponent {
       contato: value.contato || undefined,
       observacoes: value.observacoes || undefined
     };
-    this.service.create(payload).subscribe({
+    const request = this.editing()
+      ? this.service.update(this.editing()?.id!, payload)
+      : this.service.create(payload);
+
+    request.subscribe({
       next: () => {
-        this.notification.success('Predio cadastrado com sucesso.');
+        this.notification.success(`Predio ${this.editing() ? 'atualizado' : 'cadastrado'} com sucesso.`);
         this.form.reset({
           nome: '',
           endereco: '',
@@ -151,11 +167,12 @@ export class PredioListComponent {
           observacoes: ''
         });
         this.pending.set(false);
+        this.editing.set(null);
         this.load();
       },
       error: () => {
         this.pending.set(false);
-        this.notification.error('Falha ao cadastrar o predio.');
+        this.notification.error(`Falha ao ${this.editing() ? 'atualizar' : 'cadastrar'} o predio.`);
       }
     });
   }
@@ -175,6 +192,30 @@ export class PredioListComponent {
         this.removingId.set(null);
         this.notification.error('Falha ao remover o predio.');
       }
+    });
+  }
+
+  edit(predio: Predio): void {
+    this.editing.set(predio);
+    this.form.patchValue({
+      nome: predio.nome,
+      endereco: predio.endereco,
+      numeroUnidades: predio.numeroUnidades,
+      sindico: predio.sindico || '',
+      contato: predio.contato || '',
+      observacoes: predio.observacoes || ''
+    });
+  }
+
+  cancelEdit(): void {
+    this.editing.set(null);
+    this.form.reset({
+      nome: '',
+      endereco: '',
+      numeroUnidades: 0,
+      sindico: '',
+      contato: '',
+      observacoes: ''
     });
   }
 }

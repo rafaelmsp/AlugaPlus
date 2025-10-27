@@ -9,6 +9,7 @@ export interface Inquilino {
   endereco?: string;
   observacoes?: string;
   usuario?: Usuario;
+  imovelId?: number | null;
 }
 
 

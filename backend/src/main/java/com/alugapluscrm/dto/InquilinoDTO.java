@@ -8,6 +8,7 @@ public record InquilinoDTO(
         String email,
         String endereco,
         String observacoes,
-        Long usuarioId
+        Long usuarioId,
+        Long imovelId
 ) {
 }
